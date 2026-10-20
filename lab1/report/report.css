@@ -1,0 +1,90 @@
+/* Styling for the printed/exported notebook report (injected at export time). */
+@page { size: A4; margin: 13mm 12mm 14mm 12mm; }
+
+html, body { background: #ffffff !important; }
+body { color: #1b1b1b; }
+.jp-Notebook, .jp-NotebookPanel, #notebook { background: #ffffff !important; }
+.jp-Cell { background: transparent !important; padding: 0 !important; }
+.jp-Cell-inputWrapper, .jp-Cell-outputWrapper { background: transparent !important; }
+.jp-InputArea { background: transparent !important; }
+.jp-Notebook { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+
+/* Export the results only. Code cells remain visible in the .ipynb. */
+.jp-CodeCell .jp-Cell-inputWrapper { display: none !important; }
+.jp-CodeCell.jp-mod-noOutputs { display: none !important; }
+
+.jp-InputArea-editor {
+  background: #f7f8fa !important;
+  border: 1px solid #e6e8eb !important;
+  font-size: 7.4pt;
+  line-height: 1.32;
+}
+.jp-OutputArea-output pre { font-size: 8.2pt; }
+.jp-InputPrompt, .jp-OutputPrompt { display: none !important; }
+.jp-InputArea-editor pre { orphans: 8; widows: 8; }
+.jp-OutputArea-output pre { orphans: 6; widows: 6; }
+
+h1 { font-size: 19pt; margin: 0 0 4px 0; line-height: 1.2; }
+h2 { font-size: 13.5pt; margin: 18px 0 6px 0; padding-bottom: 2px;
+     border-bottom: 1px solid #c9ced6; page-break-after: avoid; }
+h3 { font-size: 11.2pt; margin: 12px 0 4px 0; page-break-after: avoid; }
+p { margin: 5px 0 8px 0; }
+ul { margin: 5px 0 8px 0; padding-left: 20px; }
+li { margin: 3px 0; }
+
+.jp-RenderedHTMLCommon pre {
+  font-family: "DejaVu Sans Mono", monospace;
+  font-size: 8.8pt;
+  line-height: 1.4;
+  background: #f7f8fa;
+  border-left: 3px solid #4c72b0;
+  padding: 7px 10px;
+  white-space: pre-wrap;
+  page-break-inside: avoid;
+}
+
+.jp-RenderedHTMLCommon table:not(.report-table) {
+  border-collapse: collapse;
+  margin: 6px 0 10px 0;
+  font-size: 9pt;
+}
+.jp-RenderedHTMLCommon table:not(.report-table) td,
+.jp-RenderedHTMLCommon table:not(.report-table) th {
+  border: 1px solid #ccd2d9;
+  padding: 3px 7px;
+  text-align: right;
+}
+.jp-RenderedHTMLCommon table:not(.report-table) th:nth-child(-n+3),
+.jp-RenderedHTMLCommon table:not(.report-table) td:nth-child(-n+3) {
+  text-align: left;
+}
+.jp-RenderedHTMLCommon table:not(.report-table) tr:nth-child(odd) { background: #f6f8fa; }
+
+.report-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 8.9pt;
+  margin: 6px 0 10px 0;
+  page-break-inside: avoid;
+}
+.report-table th, .report-table td {
+  border: 1px solid #b9c0c9;
+  padding: 3px 6px;
+  text-align: right;
+}
+.report-table th { background: #e9edf2; font-weight: 600; }
+.report-table td:nth-child(1), .report-table th:nth-child(1),
+.report-table td:nth-child(2), .report-table th:nth-child(2) { text-align: left; }
+
+.tours {
+  font-family: "DejaVu Sans Mono", monospace;
+  font-size: 7.9pt;
+  line-height: 1.42;
+  background: #fafafa;
+  border: 1px solid #e2e2e2;
+  padding: 6px 9px;
+  page-break-inside: avoid;
+  margin: 3px 0 10px 0;
+}
+.tourblock { page-break-inside: avoid; }
+img, .jp-RenderedImage { page-break-inside: avoid; max-width: 100%; }
