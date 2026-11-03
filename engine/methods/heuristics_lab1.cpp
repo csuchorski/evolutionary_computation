@@ -1,13 +1,15 @@
-#include "lab1/lab1.hpp"
+#include "methods/heuristics_lab1.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <numeric>
 
+namespace lab1 {
+
 // ---------------------------------------------------------------------------
 //  Method 1: random solution
 // ---------------------------------------------------------------------------
-static std::vector<int> randomTour(const Instance& inst, std::mt19937& rng) {
+std::vector<int> randomTour(const Instance& inst, std::mt19937& rng) {
     std::vector<int> idx(inst.n);
     std::iota(idx.begin(), idx.end(), 0);
     std::shuffle(idx.begin(), idx.end(), rng);   // uniform subset ...
@@ -96,7 +98,7 @@ static std::vector<int> nnAnyPosition(const Instance& inst, int start) {
 //  The wrap edge (last -> first) is an ordinary insertion position, so
 //  "appending" costs d[last][j] + d[j][first] - d[last][first].
 // ---------------------------------------------------------------------------
-static std::vector<int> greedyCycle(const Instance& inst, int start) {
+std::vector<int> greedyCycle(const Instance& inst, int start) {
     const int n = inst.n, k = inst.k;
     std::vector<char> used(n, 0);
     used[start] = 1;
@@ -138,7 +140,7 @@ static std::vector<int> greedyCycle(const Instance& inst, int start) {
     return tour;
 }
 
-void registerLab1(std::vector<Method>& methods) {
+void registerMethods(std::vector<Method>& methods) {
     methods.push_back({"random", "Random", 1, false,
                        [](BuildContext& c) { return randomTour(c.inst, c.rng); }});
     methods.push_back({"nn_end", "Nearest neighbour (append at end)", 1, true,
@@ -148,3 +150,5 @@ void registerLab1(std::vector<Method>& methods) {
     methods.push_back({"greedy_cycle", "Greedy cycle", 1, true,
                        [](BuildContext& c) { return greedyCycle(c.inst, c.start); }});
 }
+
+}  // namespace lab1

@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
-"""Execute the report notebook, export styled HTML and print it to PDF.
+"""Execute a report notebook, export styled HTML and print it to PDF.
 
-Usage:  .venv/bin/python tools/render_report.py
+Usage:  .venv/bin/python tools/render_report.py [lab1|lab2|lab3]
 
-The notebook itself builds the C++ engine, runs both instances and writes the
+The notebook itself builds the C++ engine, runs the solver and writes the
 figures; this script only drives nbconvert and headless Chrome.
 """
 
 from __future__ import annotations
 
+import argparse
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-NB = ROOT / "report" / "lab2_report.ipynb"
-HTML = ROOT / "report" / "report.html"
-PDF = ROOT / "report" / "report.pdf"
 CSS = ROOT / "report" / "report.css"
 
 
@@ -27,8 +25,18 @@ def run(cmd: list[object], **kwargs) -> None:
 
 
 def main() -> int:
-    if not NB.exists():
-        print(f"notebook not found: {NB}", file=sys.stderr)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("lab", nargs="?", default="lab3",
+                        choices=["lab1", "lab2", "lab3"])
+    args = parser.parse_args()
+
+    lab_dir = ROOT / args.lab
+    notebook = lab_dir / "report" / f"{args.lab}_report.ipynb"
+    html = lab_dir / "report" / "report.html"
+    pdf = lab_dir / "report" / "report.pdf"
+
+    if not notebook.exists():
+        print(f"notebook not found: {notebook}", file=sys.stderr)
         return 1
 
     jupyter = ROOT / ".venv" / "bin" / "jupyter"
@@ -41,20 +49,20 @@ def main() -> int:
 
     # 1. execute the notebook and store its outputs in the .ipynb itself
     run([jupyter, "nbconvert", "--to", "notebook", "--execute", "--inplace",
-         NB, "--ExecutePreprocessor.timeout=900"], cwd=ROOT)
+         notebook, "--ExecutePreprocessor.timeout=1800"], cwd=ROOT)
 
-    # 2. export HTML
-    run([jupyter, "nbconvert", "--to", "html", NB,
-         "--output", "report.html", "--output-dir", ROOT / "report"], cwd=ROOT)
+    # 2. export HTML into the lab's report directory
+    run([jupyter, "nbconvert", "--to", "html", notebook,
+         "--output", "report.html", "--output-dir", lab_dir / "report"], cwd=ROOT)
 
-    # 3. inject the print stylesheet (kept outside the notebook)
-    html = HTML.read_text(encoding="utf-8")
-    if "</head>" not in html:
+    # 3. inject the shared print stylesheet
+    html_text = html.read_text(encoding="utf-8")
+    if "</head>" not in html_text:
         print("unexpected HTML export: no </head>", file=sys.stderr)
         return 1
     css = CSS.read_text(encoding="utf-8")
-    html = html.replace("</head>", f"<style>\n{css}\n</style>\n</head>", 1)
-    HTML.write_text(html, encoding="utf-8")
+    html_text = html_text.replace("</head>", f"<style>\n{css}\n</style>\n</head>", 1)
+    html.write_text(html_text, encoding="utf-8")
 
     # 4. print to PDF with headless Chrome (vector figures, A4)
     chrome = (shutil.which("google-chrome") or shutil.which("google-chrome-stable")
@@ -65,16 +73,16 @@ def main() -> int:
             "Install one of:\n"
             "  sudo snap install chromium\n"
             "  sudo apt install ./google-chrome-stable_current_amd64.deb\n"
-            f"or open {HTML} in a browser and print it to PDF manually.",
+            f"or open {html} in a browser and print it to PDF manually.",
             file=sys.stderr)
         return 1
     run([chrome, "--headless=new", "--no-sandbox", "--disable-gpu",
          "--disable-dev-shm-usage", "--no-pdf-header-footer",
          "--virtual-time-budget=20000",
-         f"--print-to-pdf={PDF}", HTML.as_uri()])
+         f"--print-to-pdf={pdf}", html.as_uri()])
 
-    size = PDF.stat().st_size / 1e6 if PDF.exists() else 0.0
-    print(f"\nHTML: {HTML}\nPDF:  {PDF} ({size:.1f} MB)")
+    size = pdf.stat().st_size / 1e6 if pdf.exists() else 0.0
+    print(f"\nHTML: {html}\nPDF:  {pdf} ({size:.1f} MB)")
     return 0
 
 

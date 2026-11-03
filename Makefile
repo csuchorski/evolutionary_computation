@@ -1,10 +1,10 @@
 CXX      ?= g++
 CXXFLAGS ?= -O2 -std=c++17 -Wall -Wextra -pedantic
-CPPFLAGS ?= -Isrc
+CPPFLAGS ?= -Iengine
 TARGET    = tsp_solver
-SRCS      = $(wildcard src/*.cpp src/*/*.cpp)
+SRCS      = $(wildcard engine/*.cpp engine/*/*.cpp)
 OBJS      = $(SRCS:.cpp=.o)
-HEADERS   = $(wildcard src/*.hpp src/*/*.hpp)
+HEADERS   = $(wildcard engine/*.hpp engine/*/*.hpp)
 
 all: $(TARGET)
 

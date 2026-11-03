@@ -1,7 +1,9 @@
-#include "lab2/lab2.hpp"
+#include "methods/regret_lab2.hpp"
 
 #include <algorithm>
 #include <limits>
+
+namespace lab2 {
 
 // ---------------------------------------------------------------------------
 //  Regret heuristics
@@ -143,14 +145,23 @@ static std::vector<int> regretConstruct(const Instance& inst, int start, bool cy
     return tour;
 }
 
-void registerLab2(std::vector<Method>& methods) {
+void registerMethods(std::vector<Method>& methods) {
     methods.push_back({"regret_path", "2-regret (open path)", 2, true,
-                       [](BuildContext& c) { return regretConstruct(c.inst, c.start, false, false, 0.0, 0.0); }});
+                       [](BuildContext& c) {
+                           return regretConstruct(c.inst, c.start, false, false, 0.0, 0.0);
+                       }});
     methods.push_back({"regret_cycle", "2-regret (greedy cycle)", 2, true,
-                       [](BuildContext& c) { return regretConstruct(c.inst, c.start, true, false, 0.0, 0.0); }});
+                       [](BuildContext& c) {
+                           return regretConstruct(c.inst, c.start, true, false, 0.0, 0.0);
+                       }});
     methods.push_back({"weighted_path", "Weighted sum (open path)", 2, true,
-                       [](BuildContext& c) { return regretConstruct(c.inst, c.start, false, true, c.wr, c.wb); }});
+                       [](BuildContext& c) {
+                           return regretConstruct(c.inst, c.start, false, true, c.wr, c.wb);
+                       }});
     methods.push_back({"weighted_cycle", "Weighted sum (greedy cycle)", 2, true,
-                       [](BuildContext& c) { return regretConstruct(c.inst, c.start, true, true, c.wr, c.wb); }});
+                       [](BuildContext& c) {
+                           return regretConstruct(c.inst, c.start, true, true, c.wr, c.wb);
+                       }});
 }
- 
+
+}  // namespace lab2
