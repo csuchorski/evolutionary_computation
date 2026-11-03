@@ -86,6 +86,7 @@ make
 | `--seed N` | `12345` | base RNG seed |
 | `--runs N` | `200` | number of solutions per method |
 | `--lab L` | `all` | `1`, `2`, `3`, `all` or a comma-separated list |
+| `--only KEY` | all selected | run only the method with this key, e.g. `random` |
 | `--wr W` | `0.5` | regret weight of the Lab-2 weighted-sum criterion |
 | `--wb W` | `0.5` | best-change weight of the Lab-2 weighted-sum criterion |
 
