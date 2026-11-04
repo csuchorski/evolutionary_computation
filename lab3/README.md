@@ -127,12 +127,12 @@ Heuristic methods report `initial_objective = objective`, `moves = 0` and
 ## Report contents
 
 `report/lab3_report.ipynb` contains: problem statement, data and distance
-matrix, heuristic-method summary, local-search deltas, steepest and greedy
-pseudocode, the precise randomization description, the eight combinations,
-experiment setup, the objective table in `average (min – max)` form for all 16
-methods, the running-time table, distributions, local-search diagnostics,
-2-D visualisations and node lists of the best solutions, observations and
-reproduction notes.
+matrix, reference heuristics, neighbourhood and move-evaluation formulas,
+steepest and greedy pseudocode, the randomization description, starting
+solutions and the eight variants, experimental setup, the objective table in
+`average (min – max)` form for all 16 methods, the running-time table,
+distributions, an equal-time random-restart baseline, 2-D visualisations and
+node lists of the best solutions, and conclusions.
 
 Generated artefacts:
 

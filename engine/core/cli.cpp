@@ -41,6 +41,7 @@ Options parseOptions(int argc, char** argv) {
         else if (arg == "--wr") options.wr = std::stod(next("--wr"));
         else if (arg == "--wb") options.wb = std::stod(next("--wb"));
         else if (arg == "--lab") options.labMask = parseLabMask(next("--lab"));
+        else if (arg == "--only") options.only = next("--only");
         else throw std::runtime_error("unknown option " + arg);
     }
     if (options.runs <= 0) throw std::runtime_error("--runs must be positive");

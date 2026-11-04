@@ -24,9 +24,11 @@ int main(int argc, char** argv) {
 
         std::vector<Method> methods;
         for (const Method& method : registry) {
-            if (options.labMask & (1 << method.lab)) methods.push_back(method);
+            if (!(options.labMask & (1 << method.lab))) continue;
+            if (!options.only.empty() && method.key != options.only) continue;
+            methods.push_back(method);
         }
-        if (methods.empty()) throw std::runtime_error("no methods selected by --lab");
+        if (methods.empty()) throw std::runtime_error("no methods selected by --lab/--only");
 
         fs::create_directories(options.outDir);
 
