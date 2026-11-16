@@ -24,7 +24,7 @@ std::mt19937 makeMethodRng(unsigned baseSeed, const std::string& key) {
 }
 
 MethodResult runMethod(const Instance& inst, const Method& method, int runs,
-                       unsigned seed, double wr, double wb) {
+                       unsigned seed, double wr, double wb, int candidates) {
     MethodResult res;
     res.key = method.key;
     res.label = method.label;
@@ -34,11 +34,12 @@ MethodResult runMethod(const Instance& inst, const Method& method, int runs,
     res.moves.reserve(runs);
     res.evaluations.reserve(runs);
 
-    std::mt19937 rng = makeMethodRng(seed, method.key);
+    const std::string& rngKey = method.rngGroup.empty() ? method.key : method.rngGroup;
+    std::mt19937 rng = makeMethodRng(seed, rngKey);
 
     const auto t0 = std::chrono::steady_clock::now();
     for (int r = 0; r < runs; ++r) {
-        BuildContext ctx{inst, r % inst.n, rng, wr, wb, {}};   // one start per node
+        BuildContext ctx{inst, r % inst.n, rng, wr, wb, candidates, {}};  // one start per node
         std::vector<int> tour = method.build(ctx);
         Solution s = evaluate(inst, std::move(tour));
         validate(inst, s);

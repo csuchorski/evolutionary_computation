@@ -1,6 +1,6 @@
-# Evolutionary Computation — laboratories 1–3
+# Evolutionary Computation — laboratories 1–4
 
-This repository contains the three assignments of the Evolutionary Computation
+This repository contains the four assignments of the Evolutionary Computation
 course. All laboratories solve the same problem: select exactly `k = ceil(n/2)`
 of `n` nodes and build a closed tour through them, minimising
 
@@ -31,6 +31,7 @@ EC/
       heuristics_lab1.{hpp,cpp}     random, NN append, NN any position, greedy cycle
       regret_lab2.{hpp,cpp}         2-regret and weighted-sum heuristics
       local_search_lab3.{hpp,cpp}   steepest/greedy local search
+      local_search_lab4.{hpp,cpp}   steepest local search with candidate moves
 
   tools/
     render_report.py           execute a lab notebook, export HTML and PDF
@@ -39,11 +40,12 @@ EC/
   report/report.css            shared print stylesheet
   requirements.txt
   Makefile
-  run.sh                       ./run.sh lab1 | lab2 | lab3
+  run.sh                       ./run.sh lab1 | lab2 | lab3 | lab4
 
   lab1/  report/, results/, README.md, run.sh
   lab2/  report/, results/, README.md, run.sh
   lab3/  report/, results/, README.md, run.sh
+  lab4/  report/, results/, README.md, run.sh
 ```
 
 ## Requirements
@@ -85,10 +87,11 @@ make
 | `--data DIR` | `data` | directory with `TSPA.csv` and `TSPB.csv` |
 | `--seed N` | `12345` | base RNG seed |
 | `--runs N` | `200` | number of solutions per method |
-| `--lab L` | `all` | `1`, `2`, `3`, `all` or a comma-separated list |
+| `--lab L` | `all` | `1`, `2`, `3`, `4`, `all` or a comma-separated list |
 | `--only KEY` | all selected | run only the method with this key, e.g. `random` |
 | `--wr W` | `0.5` | regret weight of the Lab-2 weighted-sum criterion |
 | `--wb W` | `0.5` | best-change weight of the Lab-2 weighted-sum criterion |
+| `--candidates N` | `10` | candidate-list size of the Lab-4 method |
 
 Every method gets its own RNG stream derived from `--seed` and its key, so
 `--lab 3` and `--lab all` produce the same Lab-3 results.
@@ -114,6 +117,9 @@ search effort.
   open-path and closed-cycle base. See `lab2/README.md`.
 - **Laboratory 3** — steepest and greedy local search with inter-route node
   exchanges and intra-route node/edge exchanges. See `lab3/README.md`.
+- **Laboratory 4** — steepest local search restricted to candidate moves, with
+  separate candidate lists for inter- and intra-route moves. See
+  `lab4/README.md`.
 
 ## Instances
 

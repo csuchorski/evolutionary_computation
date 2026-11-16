@@ -9,7 +9,8 @@ struct Options {
     int runs = 200;
     double wr = 0.5;
     double wb = 0.5;
-    int labMask = (1 << 1) | (1 << 2) | (1 << 3);
+    int candidates = 10;  // candidate-list size for the Lab-4 methods
+    int labMask = (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
     std::string only;   // optional method-key filter
 };
 

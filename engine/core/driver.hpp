@@ -28,4 +28,4 @@ struct MethodResult {
 std::mt19937 makeMethodRng(unsigned baseSeed, const std::string& key);
 
 MethodResult runMethod(const Instance& inst, const Method& method, int runs,
-                       unsigned seed, double wr, double wb);
+                       unsigned seed, double wr, double wb, int candidates);

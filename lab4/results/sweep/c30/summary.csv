@@ -1,0 +1,3 @@
+instance,method,min,max,average,best,first_node,time_ms
+TSPA,ls_cand_steepest_random,73749,81401,76119.5,73749,157,2789.8
+TSPB,ls_cand_steepest_random,50109,56178,52509.6,50109,57,3211.2

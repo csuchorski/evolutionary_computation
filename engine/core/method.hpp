@@ -23,6 +23,7 @@ struct BuildContext {
     std::mt19937& rng;
     double wr = 0.5;   // weighted-sum regret weight
     double wb = 0.5;   // weighted-sum best-change weight
+    int candidates = 10;  // number of nearest vertices kept per candidate list
     BuildStats stats;
 };
 
@@ -31,7 +32,11 @@ struct BuildContext {
 struct Method {
     std::string key;     // file-friendly identifier
     std::string label;   // human-readable name
-    int lab = 1;         // assignment the method belongs to (1, 2 or 3)
+    int lab = 1;         // assignment the method belongs to (1, 2, 3 or 4)
     bool usesStart = true;
     std::function<std::vector<int>(BuildContext&)> build;
+    // Optional: key of another method whose RNG stream should be shared. Used by
+    // Lab 4 so the candidate search starts from exactly the same random tours as
+    // its baseline, making the comparison paired. Empty means "use own key".
+    std::string rngGroup{};
 };

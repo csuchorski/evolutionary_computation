@@ -4,6 +4,7 @@
 #include "core/output.hpp"
 #include "methods/heuristics_lab1.hpp"
 #include "methods/local_search_lab3.hpp"
+#include "methods/local_search_lab4.hpp"
 #include "methods/regret_lab2.hpp"
 
 #include <iomanip>
@@ -21,6 +22,7 @@ int main(int argc, char** argv) {
         lab1::registerMethods(registry);
         lab2::registerMethods(registry);
         lab3::registerMethods(registry);
+        lab4::registerMethods(registry);
 
         std::vector<Method> methods;
         for (const Method& method : registry) {
@@ -45,7 +47,8 @@ int main(int argc, char** argv) {
 
             for (const Method& method : methods) {
                 MethodResult result = runMethod(inst, method, options.runs,
-                                                options.seed, options.wr, options.wb);
+                                                options.seed, options.wr, options.wb,
+                                                options.candidates);
 
                 std::cout << "  " << std::setw(34) << std::left << result.label
                           << " min " << std::setw(8) << result.minV

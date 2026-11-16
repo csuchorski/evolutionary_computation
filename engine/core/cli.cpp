@@ -5,17 +5,17 @@
 
 namespace {
 
-// --lab accepts "all", a single lab ("1", "2", "3") or a comma-separated list
-// ("1,2,3"). Bit `lab` of the returned mask is set for every selected lab.
+// --lab accepts "all", a single lab ("1", "2", "3", "4") or a comma-separated
+// list ("1,2,3,4"). Bit `lab` of the returned mask is set for every selected lab.
 int parseLabMask(const std::string& value) {
-    if (value == "all") return (1 << 1) | (1 << 2) | (1 << 3);
+    if (value == "all") return (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
     int mask = 0;
     std::stringstream stream(value);
     std::string part;
     while (std::getline(stream, part, ',')) {
         if (part.empty()) continue;
         const int lab = std::stoi(part);
-        if (lab < 1 || lab > 3) throw std::runtime_error("unknown lab " + part);
+        if (lab < 1 || lab > 4) throw std::runtime_error("unknown lab " + part);
         mask |= (1 << lab);
     }
     if (mask == 0) throw std::runtime_error("empty --lab value");
@@ -40,10 +40,12 @@ Options parseOptions(int argc, char** argv) {
         else if (arg == "--runs") options.runs = std::stoi(next("--runs"));
         else if (arg == "--wr") options.wr = std::stod(next("--wr"));
         else if (arg == "--wb") options.wb = std::stod(next("--wb"));
+        else if (arg == "--candidates") options.candidates = std::stoi(next("--candidates"));
         else if (arg == "--lab") options.labMask = parseLabMask(next("--lab"));
         else if (arg == "--only") options.only = next("--only");
         else throw std::runtime_error("unknown option " + arg);
     }
     if (options.runs <= 0) throw std::runtime_error("--runs must be positive");
+    if (options.candidates <= 0) throw std::runtime_error("--candidates must be positive");
     return options;
 }

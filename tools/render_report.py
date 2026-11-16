@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Execute a report notebook, export styled HTML and print it to PDF.
 
-Usage:  .venv/bin/python tools/render_report.py [lab1|lab2|lab3]
+Usage:  .venv/bin/python tools/render_report.py [lab1|lab2|lab3|lab4]
 
 The notebook itself builds the C++ engine, runs the solver and writes the
 figures; this script only drives nbconvert and headless Chrome.
@@ -27,7 +27,7 @@ def run(cmd: list[object], **kwargs) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("lab", nargs="?", default="lab3",
-                        choices=["lab1", "lab2", "lab3"])
+                        choices=["lab1", "lab2", "lab3", "lab4"])
     args = parser.parse_args()
 
     lab_dir = ROOT / args.lab

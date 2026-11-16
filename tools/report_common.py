@@ -37,6 +37,7 @@ ALL_LABELS = {
     "ls_greedy_edges_random": "Greedy, edge swap, random start",
     "ls_greedy_nodes_greedy": "Greedy, node swap, greedy start",
     "ls_greedy_edges_greedy": "Greedy, edge swap, greedy start",
+    "ls_cand_steepest_random": "Steepest, candidate moves, random start",
 }
 
 ALL_SHORT = {
@@ -56,6 +57,7 @@ ALL_SHORT = {
     "ls_greedy_edges_random": "G/edge/rand",
     "ls_greedy_nodes_greedy": "G/node/greedy",
     "ls_greedy_edges_greedy": "G/edge/greedy",
+    "ls_cand_steepest_random": "Cand/steep",
 }
 
 ALL_COLORS = {
@@ -75,6 +77,7 @@ ALL_COLORS = {
     "ls_greedy_edges_random": "#ff9896",
     "ls_greedy_nodes_greedy": "#9467bd",
     "ls_greedy_edges_greedy": "#c5b0d5",
+    "ls_cand_steepest_random": "#000075",
 }
 
 
