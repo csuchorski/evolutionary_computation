@@ -1,6 +1,6 @@
-# Evolutionary Computation — laboratories 1–4
+# Evolutionary Computation — laboratories 1–5
 
-This repository contains the four assignments of the Evolutionary Computation
+This repository contains the five assignments of the Evolutionary Computation
 course. All laboratories solve the same problem: select exactly `k = ceil(n/2)`
 of `n` nodes and build a closed tour through them, minimising
 
@@ -32,6 +32,7 @@ EC/
       regret_lab2.{hpp,cpp}         2-regret and weighted-sum heuristics
       local_search_lab3.{hpp,cpp}   steepest/greedy local search
       local_search_lab4.{hpp,cpp}   steepest local search with candidate moves
+      local_search_lab5.{hpp,cpp}   steepest local search with a list of moves
 
   tools/
     render_report.py           execute a lab notebook, export HTML and PDF
@@ -40,12 +41,13 @@ EC/
   report/report.css            shared print stylesheet
   requirements.txt
   Makefile
-  run.sh                       ./run.sh lab1 | lab2 | lab3 | lab4
+  run.sh                       ./run.sh lab1 | lab2 | lab3 | lab4 | lab5
 
   lab1/  report/, results/, README.md, run.sh
   lab2/  report/, results/, README.md, run.sh
   lab3/  report/, results/, README.md, run.sh
   lab4/  report/, results/, README.md, run.sh
+  lab5/  report/, results/, README.md, run.sh
 ```
 
 ## Requirements
@@ -87,11 +89,11 @@ make
 | `--data DIR` | `data` | directory with `TSPA.csv` and `TSPB.csv` |
 | `--seed N` | `12345` | base RNG seed |
 | `--runs N` | `200` | number of solutions per method |
-| `--lab L` | `all` | `1`, `2`, `3`, `4`, `all` or a comma-separated list |
+| `--lab L` | `all` | `1`, `2`, `3`, `4`, `5`, `all` or a comma-separated list |
 | `--only KEY` | all selected | run only the method with this key, e.g. `random` |
 | `--wr W` | `0.5` | regret weight of the Lab-2 weighted-sum criterion |
 | `--wb W` | `0.5` | best-change weight of the Lab-2 weighted-sum criterion |
-| `--candidates N` | `10` | candidate-list size of the Lab-4 method |
+| `--candidates N` | `10` | candidate-list size of the Lab-4 method and Lab-5 combined method |
 
 Every method gets its own RNG stream derived from `--seed` and its key, so
 `--lab 3` and `--lab all` produce the same Lab-3 results.
@@ -101,7 +103,7 @@ Every method gets its own RNG stream derived from `--seed` and its key, so
 | File | Content |
 |---|---|
 | `summary.csv` | per instance and method: min, max, average, best, first node, total time |
-| `runs.csv` | every solution: run, start node, objective, distance, costs, initial objective, accepted moves, evaluated deltas |
+| `runs.csv` | every solution: run, start node, objective, distance, costs, initial objective, accepted moves, evaluated deltas and LM diagnostics |
 | `best_tours.csv` | best tour per instance and method (0-based node list) |
 | `best_tours_columns.csv` | best tours as columns, one header row and 100 node rows |
 
@@ -120,6 +122,9 @@ search effort.
 - **Laboratory 4** — steepest local search restricted to candidate moves, with
   separate candidate lists for inter- and intra-route moves. See
   `lab4/README.md`.
+- **Laboratory 5** — steepest local search driven by a list of improving moves
+  (LM), with saved deltas, relative-direction applicability and a combined
+  LM + candidate-move variant. See `lab5/README.md`.
 
 ## Instances
 

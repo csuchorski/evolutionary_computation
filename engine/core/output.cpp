@@ -30,7 +30,8 @@ void writeResults(const fs::path& outDir,
 
     summaryCsv << "instance,method,min,max,average,best,first_node,time_ms\n";
     runsCsv << "instance,method,run,start_node,objective,distance,costs,"
-               "initial_objective,moves,evaluated\n";
+               "initial_objective,moves,evaluated,lm_checks,lm_skipped,"
+               "lm_removed,regenerations,max_lm_size\n";
     toursCsv << "instance,method,objective,distance,costs,first_node,tour\n";
 
     for (const InstanceOutput& output : outputs) {
@@ -46,7 +47,11 @@ void writeResults(const fs::path& outDir,
                 runsCsv << output.instance << ',' << result.key << ',' << r << ','
                         << result.startNode[r] << ',' << s.value << ',' << s.dist
                         << ',' << s.cost << ',' << result.initialValue[r] << ','
-                        << result.moves[r] << ',' << result.evaluations[r] << '\n';
+                        << result.moves[r] << ',' << result.evaluations[r] << ','
+                        << result.lmChecks[r] << ',' << result.lmSkipped[r] << ','
+                        << result.lmRemoved[r] << ','
+                        << result.regenerations[r] << ','
+                        << result.maxLmSize[r] << '\n';
             }
 
             const Solution& best = result.best();

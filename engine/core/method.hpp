@@ -13,6 +13,11 @@ struct BuildStats {
     long long initialValue = 0;   // objective of the starting solution
     long long moves = 0;          // accepted improving moves
     long long evaluations = 0;    // candidate deltas computed
+    long long lmChecks = 0;       // entries inspected in the list of moves
+    long long lmSkipped = 0;      // entries kept for the other relative direction
+    long long lmRemoved = 0;      // entries discarded from the list of moves
+    long long regenerations = 0;  // full neighbourhood rebuilds
+    long long maxLmSize = 0;      // largest list of moves seen
 };
 
 // Everything a method needs. `start` is the starting node and is ignored by

@@ -4,7 +4,9 @@
 #include "methods/heuristics_lab1.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
+#include <random>
 #include <stdexcept>
 
 namespace lab3 {
@@ -23,6 +25,8 @@ enum MoveType : int {
 struct Move {
     int type;
     int i;
+    // InterExchange: j is an index in the unselected-node list.
+    // NodeSwap / EdgeSwap: j is a tour position.
     int j;
 };
 
@@ -101,21 +105,26 @@ long long edgeSwapDelta(const Instance& inst, const std::vector<int>& tour,
 }
 
 long long moveDelta(const Instance& inst, const std::vector<int>& tour,
-                    const Move& move) {
+                    const std::vector<int>& unselected, const Move& move) {
     switch (move.type) {
-        case InterExchange: return interDelta(inst, tour, move.i, move.j);
-        case NodeSwap:      return nodeSwapDelta(inst, tour, move.i, move.j);
-        default:            return edgeSwapDelta(inst, tour, move.i, move.j);
+        case InterExchange:
+            return interDelta(inst, tour, move.i, unselected[move.j]);
+        case NodeSwap:
+            return nodeSwapDelta(inst, tour, move.i, move.j);
+        default:
+            return edgeSwapDelta(inst, tour, move.i, move.j);
     }
 }
 
 void applyMove(std::vector<int>& tour, std::vector<char>& selected,
-               const Move& move) {
+               std::vector<int>& unselected, const Move& move) {
     if (move.type == InterExchange) {
         const int oldNode = tour[move.i];
+        const int newNode = unselected[move.j];
         selected[oldNode] = 0;
-        selected[move.j] = 1;
-        tour[move.i] = move.j;
+        selected[newNode] = 1;
+        tour[move.i] = newNode;
+        unselected[move.j] = oldNode;
     } else if (move.type == NodeSwap) {
         std::swap(tour[move.i], tour[move.j]);
     } else {
@@ -123,15 +132,14 @@ void applyMove(std::vector<int>& tour, std::vector<char>& selected,
     }
 }
 
-void appendMoves(const Instance& inst, const std::vector<int>& tour,
-                 const std::vector<char>& selected, IntraMove intra,
+void appendMoves(int k, int numUnselected, IntraMove intra,
                  std::vector<Move>& moves) {
-    const int k = static_cast<int>(tour.size());
-
-    // Inter-route: one selected node (a position) with one unselected node.
+    // Inter-route: one selected node (a position) with one slot in the
+    // unselected-node list. After an exchange the list entry is swapped, so the
+    // descriptor (position, slot) remains valid.
     for (int pos = 0; pos < k; ++pos) {
-        for (int v = 0; v < inst.n; ++v) {
-            if (!selected[v]) moves.push_back({InterExchange, pos, v});
+        for (int slot = 0; slot < numUnselected; ++slot) {
+            moves.push_back({InterExchange, pos, slot});
         }
     }
 
@@ -163,53 +171,66 @@ std::vector<int> localSearch(const Instance& inst, std::vector<int> tour,
     std::vector<char> selected(inst.n, 0);
     for (int v : tour) selected[v] = 1;
 
+    std::vector<int> unselected;
+    unselected.reserve(inst.n - k);
+    for (int v = 0; v < inst.n; ++v)
+        if (!selected[v]) unselected.push_back(v);
+
     const int intraCount = (intra == IntraMove::Nodes)
         ? k * (k - 1) / 2
         : k * (k - 3) / 2;
     std::vector<Move> moves;
     moves.reserve(static_cast<std::size_t>(k) * (inst.n - k) + intraCount);
+    appendMoves(k, static_cast<int>(unselected.size()), intra, moves);
 
-    while (true) {
-        moves.clear();
-        appendMoves(inst, tour, selected, intra, moves);
+    if (mode == SearchMode::Steepest) {
+        while (true) {
+            long long bestDelta = 0;
+            Move bestMove{0, 0, 0};
+            bool found = false;
 
-        // The greedy version browses the whole mixed neighbourhood in a
-        // uniformly random order. Only descriptors are shuffled; deltas are
-        // evaluated lazily and the scan stops at the first improving move.
-        if (mode == SearchMode::Greedy) {
-            std::shuffle(moves.begin(), moves.end(), rng);
+            for (const Move& move : moves) {
+                const long long delta = moveDelta(inst, tour, unselected, move);
+                ++stats.evaluations;
+                if (delta >= 0) continue;
+                if (delta < bestDelta) {
+                    bestDelta = delta;
+                    bestMove = move;
+                    found = true;
+                }
+            }
+
+            if (!found) break;
+            applyMove(tour, selected, unselected, bestMove);
+            value += bestDelta;
+            ++stats.moves;
         }
+    } else {
+        // Greedy: lazy Fisher-Yates shuffle. Only the descriptors that are
+        // actually visited are swapped into the random prefix, so the cost per
+        // iteration is proportional to the number of evaluated deltas rather
+        // than to the size of the whole neighbourhood.
+        const std::size_t count = moves.size();
+        while (true) {
+            bool improved = false;
 
-        long long bestDelta = 0;
-        Move bestMove{0, 0, 0};
-        bool found = false;
+            for (std::size_t idx = 0; idx < count; ++idx) {
+                std::uniform_int_distribution<std::size_t> pick(idx, count - 1);
+                std::swap(moves[idx], moves[pick(rng)]);
 
-        for (const Move& move : moves) {
-            const long long delta = moveDelta(inst, tour, move);
-            ++stats.evaluations;
-            if (delta >= 0) continue;
+                const Move& move = moves[idx];
+                const long long delta = moveDelta(inst, tour, unselected, move);
+                ++stats.evaluations;
+                if (delta >= 0) continue;
 
-            if (mode == SearchMode::Greedy) {
-                applyMove(tour, selected, move);
+                applyMove(tour, selected, unselected, move);
                 value += delta;
                 ++stats.moves;
-                found = true;
+                improved = true;
                 break;
             }
 
-            if (delta < bestDelta) {
-                bestDelta = delta;
-                bestMove = move;
-                found = true;
-            }
-        }
-
-        if (!found) break;
-
-        if (mode == SearchMode::Steepest) {
-            applyMove(tour, selected, bestMove);
-            value += bestDelta;
-            ++stats.moves;
+            if (!improved) break;
         }
     }
 

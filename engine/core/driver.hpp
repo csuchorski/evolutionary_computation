@@ -15,6 +15,11 @@ struct MethodResult {
     std::vector<long long> initialValue;
     std::vector<long long> moves;
     std::vector<long long> evaluations;
+    std::vector<long long> lmChecks;
+    std::vector<long long> lmSkipped;
+    std::vector<long long> lmRemoved;
+    std::vector<long long> regenerations;
+    std::vector<long long> maxLmSize;
     long long minV = 0, maxV = 0;
     double avgV = 0.0;
     int bestRun = 0;

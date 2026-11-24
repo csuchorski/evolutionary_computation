@@ -41,9 +41,13 @@ The search keeps the current tour and its objective value and evaluates every
 candidate move with an **O(1) objective delta**. No neighbour tour is constructed
 explicitly and the objective is never recomputed from scratch during the search.
 The final tour is re-evaluated and validated once. No deltas from previous
-iterations and no candidate-list restriction of the neighbourhood are used; the
-greedy variant's temporary descriptor list always contains the whole mixed
-neighbourhood and is rebuilt after every accepted move.
+iterations and no candidate-list restriction of the neighbourhood are used. The
+descriptor list of the whole mixed neighbourhood is built once per run and
+reused: inter-route descriptors refer to a slot in the unselected-node list, so
+they remain valid after exchanges, and position-based descriptors remain valid
+after the other moves. The greedy variant uses a lazy Fisher-Yates shuffle: only
+the visited prefix of the list is shuffled, so its cost is proportional to the
+number of evaluated moves.
 
 ### Neighbourhood
 
@@ -83,11 +87,14 @@ and reverses the segment between the two edges.
 
 - **Steepest** scans the whole mixed neighbourhood every iteration and applies
   the single best improving move. It stops when no negative delta exists.
-- **Greedy** builds a descriptor list of the whole mixed neighbourhood, shuffles
-  it with `std::shuffle` and a `std::mt19937` stream, then evaluates deltas one
-  by one and applies the first improving move. The list contains no deltas, so
-  the method does not "evaluate everything and then choose". After an accepted
-  move the neighbourhood is rebuilt and reshuffled.
+- **Greedy** builds a descriptor list of the whole mixed neighbourhood once,
+  then uses a **lazy Fisher-Yates shuffle**: before evaluating the descriptor
+  at index `idx`, it swaps a uniformly random descriptor from `idx … M−1` into
+  that position. Only the visited prefix is shuffled, so the cost per iteration
+  is proportional to the number of evaluated deltas, not to the whole
+  neighbourhood. The scan stops at the first improving move; after an accepted
+  move a new lazy scan starts. The list contains no deltas, so the method does
+  not "evaluate everything and then choose".
 
 The randomization is a fresh uniform permutation of the combined inter- and
 intra-route neighbourhood, so the two move kinds are interleaved and neither is

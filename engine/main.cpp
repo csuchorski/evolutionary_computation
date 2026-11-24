@@ -5,6 +5,7 @@
 #include "methods/heuristics_lab1.hpp"
 #include "methods/local_search_lab3.hpp"
 #include "methods/local_search_lab4.hpp"
+#include "methods/local_search_lab5.hpp"
 #include "methods/regret_lab2.hpp"
 
 #include <iomanip>
@@ -23,6 +24,7 @@ int main(int argc, char** argv) {
         lab2::registerMethods(registry);
         lab3::registerMethods(registry);
         lab4::registerMethods(registry);
+        lab5::registerMethods(registry);
 
         std::vector<Method> methods;
         for (const Method& method : registry) {

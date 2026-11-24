@@ -33,6 +33,11 @@ MethodResult runMethod(const Instance& inst, const Method& method, int runs,
     res.initialValue.reserve(runs);
     res.moves.reserve(runs);
     res.evaluations.reserve(runs);
+    res.lmChecks.reserve(runs);
+    res.lmSkipped.reserve(runs);
+    res.lmRemoved.reserve(runs);
+    res.regenerations.reserve(runs);
+    res.maxLmSize.reserve(runs);
 
     const std::string& rngKey = method.rngGroup.empty() ? method.key : method.rngGroup;
     std::mt19937 rng = makeMethodRng(seed, rngKey);
@@ -53,6 +58,11 @@ MethodResult runMethod(const Instance& inst, const Method& method, int runs,
         res.initialValue.push_back(initial);
         res.moves.push_back(ctx.stats.moves);
         res.evaluations.push_back(ctx.stats.evaluations);
+        res.lmChecks.push_back(ctx.stats.lmChecks);
+        res.lmSkipped.push_back(ctx.stats.lmSkipped);
+        res.lmRemoved.push_back(ctx.stats.lmRemoved);
+        res.regenerations.push_back(ctx.stats.regenerations);
+        res.maxLmSize.push_back(ctx.stats.maxLmSize);
         res.sols.push_back(std::move(s));
     }
     const auto t1 = std::chrono::steady_clock::now();

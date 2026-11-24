@@ -53,9 +53,10 @@ std::vector<std::vector<int>> buildCandidateList(const Instance& inst, int count
     return list;
 }
 
-// The instance is processed method-by-method, so a single cache keyed by the
-// instance name and list size turns the per-run rebuild into a one-off
-// preprocessing step (like the distance matrix itself).
+// The candidate lists depend only on the instance and the list size, but they
+// are rebuilt for every run so that the reported running time includes their
+// construction. No static cache is used: caching would amortise the build over
+// all runs and make the candidate method look artificially fast.
 struct CandidateSet {
     std::string name;
     int count = -1;
@@ -63,15 +64,13 @@ struct CandidateSet {
     std::vector<std::vector<int>> intra;   // d only
 };
 
-const CandidateSet& candidateSet(const Instance& inst, int count) {
-    static CandidateSet cache;
-    if (cache.count != count || cache.name != inst.name) {
-        cache.name = inst.name;
-        cache.count = count;
-        cache.inter = buildCandidateList(inst, count, true);
-        cache.intra = buildCandidateList(inst, count, false);
-    }
-    return cache;
+CandidateSet candidateSet(const Instance& inst, int count) {
+    CandidateSet set;
+    set.name = inst.name;
+    set.count = count;
+    set.inter = buildCandidateList(inst, count, true);
+    set.intra = buildCandidateList(inst, count, false);
+    return set;
 }
 
 // ---------------------------------------------------------------------------
@@ -233,6 +232,28 @@ std::vector<int> candidateSteepest(const Instance& inst,
             }
         }
 
+        // Inter-route moves whose candidate edge is stored only in the
+        // unselected endpoint's list. A reciprocal pair was already handled
+        // from the selected anchor above.
+        for (int u = 0; u < inst.n; ++u) {
+            if (selected[u]) continue;
+            for (int v : inter[u]) {
+                if (!selected[v]) continue;
+                if (contains(inter[v], u)) continue;
+
+                const int q = posOf[v];
+                const int nextPos = (q + 1) % k;
+                consider(interDelta(inst, tour, nextPos, u),
+                         {InterExchange, nextPos, u});
+
+                const int prevPos = (q - 1 + k) % k;
+                if (k >= 3 && contains(inter[tour[(q - 2 + k) % k]], u))
+                    continue;
+                consider(interDelta(inst, tour, prevPos, u),
+                         {InterExchange, prevPos, u});
+            }
+        }
+
         if (!found) break;
         applyMove(tour, bestMove);
         value += bestDelta;
@@ -247,7 +268,7 @@ std::vector<int> candidateSteepest(const Instance& inst,
 }
 
 std::vector<int> buildCandidateSteepest(BuildContext& ctx) {
-    const CandidateSet& set = candidateSet(ctx.inst, ctx.candidates);
+    const CandidateSet set = candidateSet(ctx.inst, ctx.candidates);
     std::vector<int> tour = lab1::randomTour(ctx.inst, ctx.rng);
     return candidateSteepest(ctx.inst, set.inter, set.intra, std::move(tour),
                              ctx.stats);

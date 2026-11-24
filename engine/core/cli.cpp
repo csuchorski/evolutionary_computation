@@ -5,17 +5,18 @@
 
 namespace {
 
-// --lab accepts "all", a single lab ("1", "2", "3", "4") or a comma-separated
-// list ("1,2,3,4"). Bit `lab` of the returned mask is set for every selected lab.
+// --lab accepts "all", a single lab ("1", "2", "3", "4", "5") or a comma-
+// separated list ("1,2,3,4,5"). Bit `lab` of the returned mask is set for every
+// selected lab.
 int parseLabMask(const std::string& value) {
-    if (value == "all") return (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
+    if (value == "all") return (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5);
     int mask = 0;
     std::stringstream stream(value);
     std::string part;
     while (std::getline(stream, part, ',')) {
         if (part.empty()) continue;
         const int lab = std::stoi(part);
-        if (lab < 1 || lab > 4) throw std::runtime_error("unknown lab " + part);
+        if (lab < 1 || lab > 5) throw std::runtime_error("unknown lab " + part);
         mask |= (1 << lab);
     }
     if (mask == 0) throw std::runtime_error("empty --lab value");

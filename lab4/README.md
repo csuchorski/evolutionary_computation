@@ -28,7 +28,7 @@ make
 ## Engine
 
 ```bash
-./tsp_solver --seed 12345 --runs 200 --out lab4/results --data data --lab all
+./tsp_solver --seed 12345 --runs 200 --out lab4/results --data data --lab 1,2,3,4
 ```
 
 The two instances are `data/TSPA.csv` and `data/TSPB.csv`, one `x;y;cost` row
@@ -43,8 +43,8 @@ always-present inter-route node exchange). Instead of scanning the whole
 neighbourhood, only **candidate moves** are examined — moves that introduce at
 least one candidate edge.
 
-Candidate edges are built once per instance, directly from the distance matrix,
-and **separately for the two move families**:
+Candidate edges are derived directly from the distance matrix and are
+**separately built for the two move families**:
 
 - **inter-route list** — the `count` nearest vertices under
   `d(i, j) + cost[j]`, because an inter-route exchange changes the selected set;
@@ -52,6 +52,14 @@ and **separately for the two move families**:
   because an intra-route move keeps the selected set and the node costs cancel.
 
 Both lists are directed: `(i, j)` is a candidate edge when `j` is in `i`'s list.
+The lists are rebuilt for every run so that the reported running time includes
+their construction; they are identical across runs because they depend only on
+the instance and the list size.
+
+For inter-route node exchanges the scan uses both directions of the lists. If a
+candidate edge is stored only in the unselected endpoint's list, the move that
+brings that node next to the selected endpoint is still examined. The candidate
+relation is therefore effectively undirected for node exchanges.
 
 ### Loops over candidate moves only
 
@@ -66,24 +74,29 @@ for every selected node a in the tour:
         else:                    # inter-route
             two node exchanges adding the edge (a, j):
             swap next(a) with j, or swap prev(a) with j
+
+for every unselected node u:
+    for every selected v in u's inter list:
+        two node exchanges bringing u next to v:
+        swap next(v) with u, or swap prev(v) with u
 ```
 
 For a selected anchor `a` the candidate edge `(a, j)` is always the edge that the
 move introduces: the intra 2-opt removes the edges after `a`/`j` or the edges
 before `a`/`j`, and the inter exchange removes one of `a`'s two tour neighbours
-(so `a` stays and `j` becomes adjacent to it). This yields the two moves that
-introduce a given candidate edge for each family. Exchanging the anchor `a`
-itself with `j` would **not** introduce `(a, j)` and is therefore not used.
+(so `a` stays and `j` becomes adjacent to it). Exchanging the anchor `a` itself
+with `j` would **not** introduce `(a, j)` and is therefore not used.
 
-Reciprocal candidate edges and inter exchanges reachable from two anchors would
-otherwise produce the same move twice; each move is evaluated only once (the
-loop keeps the first occurrence in iteration order), so the evaluated set is
-exactly the set of candidate moves.
+The second inter-route scan handles candidate edges stored only in the
+unselected endpoint's list. A reciprocal pair is handled once from the selected
+anchor. A 2-opt move can still be reachable from two different candidate edges,
+so it may be evaluated twice; this is harmless and only affects the evaluation
+count.
 
 The cost of a full iteration drops from `O(k·(n−k) + k²)` to
-`O(k · count)`, so the running time is much shorter while the solution quality
-degrades only slightly. The default `count = 10` can be tuned with
-`--candidates`; the report includes a small sweep.
+`O(k · count + (n−k) · count)`, so the running time is shorter while the
+solution quality stays very close to the baseline. The default `count = 10` can
+be tuned with `--candidates`; the report includes a small sweep.
 
 ### Method and baseline
 
@@ -102,9 +115,8 @@ and validated once; the search never recomputes the objective from scratch.
 
 For the candidate method the shared output reports `initial_objective`,
 `moves` (accepted improving moves) and `evaluated` (candidate deltas computed).
-`evaluated` is the direct measure of the candidate-list speed-up: the
-candidate search evaluates roughly an order of magnitude fewer deltas than the
-full baseline.
+`evaluated` is the direct measure of the candidate-list speed-up: the candidate
+search evaluates about six times fewer deltas than the full baseline.
 
 ## Report contents
 

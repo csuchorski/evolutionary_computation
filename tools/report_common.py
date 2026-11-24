@@ -38,6 +38,8 @@ ALL_LABELS = {
     "ls_greedy_nodes_greedy": "Greedy, node swap, greedy start",
     "ls_greedy_edges_greedy": "Greedy, edge swap, greedy start",
     "ls_cand_steepest_random": "Steepest, candidate moves, random start",
+    "ls_lm_steepest_random": "Steepest, LM, random start",
+    "ls_lm_cand_random": "Steepest, LM + candidate moves, random start",
 }
 
 ALL_SHORT = {
@@ -58,6 +60,8 @@ ALL_SHORT = {
     "ls_greedy_nodes_greedy": "G/node/greedy",
     "ls_greedy_edges_greedy": "G/edge/greedy",
     "ls_cand_steepest_random": "Cand/steep",
+    "ls_lm_steepest_random": "LM/steep",
+    "ls_lm_cand_random": "LM+cand",
 }
 
 ALL_COLORS = {
@@ -78,6 +82,8 @@ ALL_COLORS = {
     "ls_greedy_nodes_greedy": "#9467bd",
     "ls_greedy_edges_greedy": "#c5b0d5",
     "ls_cand_steepest_random": "#000075",
+    "ls_lm_steepest_random": "#7f0000",
+    "ls_lm_cand_random": "#bcbd22",
 }
 
 
